@@ -1,111 +1,103 @@
+#pragma once
+
 #include "stm32f446xx.h"
 #include <cstdint>
 
-#include "stm32f446/common/Bit.hpp"
-#include "stm32f446/common/RegisterUtils.hpp"
-
 namespace stm32f446
 {
-
 namespace gpio
 {
 
 enum class PinState : std::uint8_t
 {
-	LOW 		= 0,
-	HIGH		= 1
-}
+    LOW = 0,
+    HIGH = 1
+};
 
 enum class Mode : std::uint8_t
 {
-	INPUT 		= 0,
-	OUTPUT		= 1,
-	ALTERNATE	= 2,
-	ANALOG		= 3
+    INPUT = 0,
+    OUTPUT = 1,
+    ALTERNATE = 2,
+    ANALOG = 3
 };
 
 enum class OutputType : std::uint8_t
 {
-	PUSH_PULL 	= 0,
-	OPEN_DRAIN	= 1
+    PUSH_PULL = 0,
+    OPEN_DRAIN = 1
 };
 
 enum class Speed : std::uint8_t
 {
-	LOW 		= 0,
-	MEDIUM		= 1,
-	FAST		= 2,
-	HIGH		= 3
+    LOW = 0,
+    MEDIUM = 1,
+    FAST = 2,
+    HIGH = 3
 };
 
 enum class Pull : std::uint8_t
 {
-	NONE 		= 0,
-	UP			= 1,
-	DOWN		= 2
+    NONE = 0,
+    UP = 1,
+    DOWN = 2
 };
 
 enum class InterruptEdge : std::uint8_t
 {
-	RISING,
-	FALLING,
-	RISING_FALLING
+    RISING,
+    FALLING,
+    RISING_FALLING
 };
 
 class Pin
 {
-private:
-	GPIO_TypeDef*	_port;
-	std::uint8_t 	_pin;
-
 public:
-	constexpr Pin(GPIO_TypeDef* port, std::uint8_t pin) noexcept
-	:	_port(port), _pin(pin){}
+    constexpr Pin(GPIO_TypeDef* port, std::uint8_t pin) noexcept
+        : port_(port), pin_(pin) {}
 
-	// configure GPIO mode
-	void configureOutput(
-			PinState initialState 	= PinState::LOW,
-			Pull pull 				= Pull::NONE,
-			OutputType outputType 	= OutputType::PUSH_PULL,
-			Speed speed				= Speed::LOW
-	) const;
+    void configureOutput(
+        PinState initialState = PinState::LOW,
+        Pull pull = Pull::NONE,
+        OutputType outputType = OutputType::PUSH_PULL,
+        Speed speed = Speed::LOW
+    ) const;
 
-	void configureInput(Pull pull = Pull::NONE) const;
+    void configureInput(Pull pull = Pull::NONE) const;
 
-	void configureAlternate(
-			std::uint8_t alternateFunction,
-			Pull pull 				= Pull::NONE,
-			OutputType outputType 	= OutputType::PUSH_PULL,
-			Speed speed				= Speed::LOW
-	) const;
+    void configureAlternate(
+        std::uint8_t alternateFunction,
+        Pull pull = Pull::NONE,
+        OutputType outputType = OutputType::PUSH_PULL,
+        Speed speed = Speed::LOW
+    ) const;
 
-	void configureAnalog() const;
+    void configureAnalog() const;
 
-	// write bit
-	void write(PinState state) const;
-	void set(void) const;
-	void reset(void) const;
-	void toggle(void) const;
+    void configureInterrupt(
+        InterruptEdge edge = InterruptEdge::FALLING,
+        Pull pull = Pull::NONE,
+        bool enableNvic = true
+    ) const;
 
-	// read bit
-	PinState read(void) const;
-	PinState outputState(void) const;
-	bool isHigh(void) const;
-	bool isLow(void) const;
+    void write(PinState state) const;
+    void set() const;
+    void reset() const;
+    void toggle() const;
 
-	// getter
-	GPIO_TypeDef* port(void) const noexcept;
-	std::uint8_t pin(void) const noexcept;
-	std::uint32_t mask(void) const noexcept;
+    PinState read() const;
+    PinState outputState() const;
+    bool isHigh() const;
+    bool isLow() const;
 
-	// interrupt
-	void configureInterrupt(
-			InterruptEdge edge 	= InterruptEdge::FALLING,
-			Pull pull			= Pull::NONE,
-			bool enableNVIC		= true
-	) const;
-};  // class Pin
+    GPIO_TypeDef* port() const noexcept;
+    std::uint8_t pin() const noexcept;
+    std::uint32_t mask() const noexcept;
 
-};  // namespace gpio
+private:
+    GPIO_TypeDef* port_;
+    std::uint8_t pin_;
+};
 
-};	// namespace stm32f446
+} // namespace gpio
+} // namespace stm32f446
