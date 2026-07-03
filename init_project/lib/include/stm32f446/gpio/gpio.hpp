@@ -57,7 +57,6 @@ public:
         : port_(port), pin_(pin) {}
 
     void configureOutput(
-        PinState initialState = PinState::LOW,
         Pull pull = Pull::NONE,
         OutputType outputType = OutputType::PUSH_PULL,
         Speed speed = Speed::LOW
@@ -92,11 +91,20 @@ public:
 
     GPIO_TypeDef* port() const noexcept;
     std::uint8_t pin() const noexcept;
-    std::uint32_t mask() const noexcept;
 
 private:
     GPIO_TypeDef* port_;
     std::uint8_t pin_;
+
+    void configureMode(Mode mode) const;
+    void configureOutputType() const;
+    void configurePull(Pull pull) const;
+    void configureSpeed(Speed speed) const;
+
+    PinState readIdr() const;
+    PinState readOdr() const;
+
+    void configureBsrr(PinState state) const;
 };
 
 } // namespace gpio
