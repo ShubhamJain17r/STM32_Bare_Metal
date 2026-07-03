@@ -5,6 +5,19 @@
 
 namespace stm32f446
 {
+namespace rcc
+{
+	void enablePortClock(GPIO_TypeDef* port)
+	{
+		gpio::enableClock(port);
+	}
+
+	void enableSyscfgClock()
+	{
+		syscfg::enableClock();
+	}
+}	// namespace rcc
+
 namespace gpio
 {
 
